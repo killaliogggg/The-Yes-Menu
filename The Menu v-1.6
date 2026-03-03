@@ -329,18 +329,18 @@
                 <div style="width: 40px; height: 2px; background: var(--theme-color); margin-bottom: 30px;"></div>
                 
                 <div class="app-grid">
-                    <div class="app-button" onclick="openApp('https://cdn.jsdelivr.net/gh/killaliogggg/The-Yes-htmls@main/Drive%20Mad', 'Drive Mad')">Drive Mad</div>
-                    <div class="app-button" onclick="openApp('https://cdn.jsdelivr.net/gh/killaliogggg/The-Yes-htmls@main/Granny%201', 'Granny 1')">Granny 1</div>
-                    <div class="app-button" onclick="openApp('https://cdn.jsdelivr.net/gh/killaliogggg/The-Yes-htmls@main/Hallownight', 'Hallownight')">Hollow Knight</div>
-                    <div class="app-button" onclick="openApp('https://cdn.jsdelivr.net/gh/killaliogggg/The-Yes-htmls@main/Retrobowl', 'Retrobowl')">Retrobowl</div>
-                    <div class="app-button" onclick="openApp('https://cdn.jsdelivr.net/gh/killaliogggg/The-Yes-htmls@main/5%20Nights%20At%20...', '5 Nights At...')">5 Nights At Epsteins</div>
-                    <div class="app-button" onclick="openApp('https://cdn.jsdelivr.net/gh/killaliogggg/The-Yes-htmls@main/1v1.lol', '1v1.lol')">1v1.lol</div>
-                    <div class="app-button" onclick="openApp('https://cdn.jsdelivr.net/gh/killaliogggg/The-Yes-htmls@main/99balls', '99balls')">99balls</div>
-                    <div class="app-button" onclick="openApp('https://cdn.jsdelivr.net/gh/killaliogggg/The-Yes-htmls@main/Minecraft%201.9%20(laggy)', 'Minecraft 1.9')">Minecraft 1.9</div>
-                    <div class="app-button" onclick="openApp('https://cdn.jsdelivr.net/gh/killaliogggg/The-Yes-htmls@main/Ultrakill', 'Ultrakill')">Ultrakill</div>
-                    <div class="app-button" onclick="openApp('https://cdn.jsdelivr.net/gh/killaliogggg/The-Yes-htmls@main/jetpack%20joyride', 'Jetpack Joyride')">Jetpack Joyride</div>
-                    <div class="app-button" onclick="openApp('https://cdn.jsdelivr.net/gh/killaliogggg/The-Yes-htmls@main/mega%20craft', 'Mega Craft')">Mega Craft</div>
-                    <div class="app-button" onclick="openApp('https://cdn.jsdelivr.net/gh/killaliogggg/The-Yes-htmls@main/obby%20on%20a%20bike', 'Obby on a Bike')">Obby on a Bike</div>
+                    <div class="app-button" onclick="openApp('Drive%20Mad/index.html', 'Drive Mad')">Drive Mad</div>
+                    <div class="app-button" onclick="openApp('Granny%201/index.html', 'Granny 1')">Granny 1</div>
+                    <div class="app-button" onclick="openApp('Hallownight/index.html', 'Hallownight')">Hallownight</div>
+                    <div class="app-button" onclick="openApp('Retrobowl/index.html', 'Retrobowl')">Retrobowl</div>
+                    <div class="app-button" onclick="openApp('5%20Nights%20At%20.../index.html', '5 Nights At...')">5 Nights At...</div>
+                    <div class="app-button" onclick="openApp('1v1.lol/index.html', '1v1.lol')">1v1.lol</div>
+                    <div class="app-button" onclick="openApp('99balls/index.html', '99balls')">99balls</div>
+                    <div class="app-button" onclick="openApp('Minecraft%201.9%20(laggy)/index.html', 'Minecraft 1.9')">Minecraft 1.9</div>
+                    <div class="app-button" onclick="openApp('Ultrakill/index.html', 'Ultrakill')">Ultrakill</div>
+                    <div class="app-button" onclick="openApp('jetpack%20joyride/index.html', 'Jetpack Joyride')">Jetpack Joyride</div>
+                    <div class="app-button" onclick="openApp('mega%20craft/index.html', 'Mega Craft')">Mega Craft</div>
+                    <div class="app-button" onclick="openApp('obby%20on%20a%20bike/index.html', 'Obby on a Bike')">Obby on a Bike</div>
                 </div>
             </div>
 
@@ -350,10 +350,10 @@
                 <div style="width: 40px; height: 2px; background: var(--theme-color); margin-bottom: 30px;"></div>
                 
                 <div class="app-grid">
-                    <div class="app-button" onclick="openApp('https://cdn.jsdelivr.net/gh/killaliogggg/The-Yes-htmls@main/Website%20preview', 'Website Preview')">Website Preview</div>
-                    <div class="app-button" onclick="openApp('https://cdn.jsdelivr.net/gh/killaliogggg/The-Yes-htmls@main/Helios', 'Helios')">Helios</div>
-                    <div class="app-button" onclick="openApp('https://cdn.jsdelivr.net/gh/killaliogggg/The-Yes-htmls@main/NautilusOS', 'NautilusOS')">NautilusOS</div>
-                    <div class="app-button" onclick="openApp('https://cdn.jsdelivr.net/gh/killaliogggg/The-Yes-htmls@main/sandstone', 'Sandstone')">Sandstone</div>
+                    <div class="app-button" onclick="openApp('Website%20preview/index.html', 'Website Preview')">Website Preview</div>
+                    <div class="app-button" onclick="openApp('Helios/index.html', 'Helios')">Helios</div>
+                    <div class="app-button" onclick="openApp('NautilusOS/index.html', 'NautilusOS')">NautilusOS</div>
+                    <div class="app-button" onclick="openApp('sandstone/index.html', 'Sandstone')">Sandstone</div>
                 </div>
             </div>
 
@@ -398,6 +398,8 @@
             font: 'font-sans',
             density: 150
         };
+
+        const BASE_URL = 'https://cdn.jsdelivr.net/gh/killaliogggg/The-Yes-htmls@main/';
 
         function saveState() {
             localStorage.setItem('the_yes_state', JSON.stringify(state));
@@ -489,7 +491,7 @@
             document.getElementById(tab + '-view').classList.remove('hidden');
         }
 
-        async function openApp(url, name) {
+        async function openApp(path, name) {
             const overlay = document.getElementById('app-window-overlay');
             const frame = document.getElementById('app-frame');
             const loader = document.getElementById('app-loader');
@@ -500,16 +502,31 @@
             title.innerText = "System: Loading " + name;
             frame.src = 'about:blank';
 
+            const fullUrl = BASE_URL + path;
+
             try {
-                const response = await fetch(url);
+                const response = await fetch(fullUrl);
+                if (!response.ok) throw new Error('Not found');
+                
                 const html = await response.text();
                 const doc = frame.contentWindow.document;
-                doc.open(); doc.write(html); doc.close();
+                doc.open(); 
+                // Add base tag to resolve relative assets within the game
+                const baseTag = `<base href="${fullUrl.substring(0, fullUrl.lastIndexOf('/') + 1)}">`;
+                doc.write(baseTag + html); 
+                doc.close();
+                
                 loader.style.display = 'none';
                 title.innerText = "Active Process: " + name;
             } catch (err) {
-                title.innerText = "Error: Failed to fetch";
-                loader.innerHTML = `<span style="color:#ff3e3e">Source is offline</span>`;
+                // Try fallback if index.html was already in path or shouldn't be
+                title.innerText = "Error: Connection Refused";
+                loader.innerHTML = `
+                    <div style="text-align:center; padding: 20px;">
+                        <span style="color:#ff3e3e; display:block; margin-bottom:10px;">Source failed to handshake.</span>
+                        <button class="win-btn" onclick="openApp('${path.replace('/index.html', '')}', '${name}')">Try Alternative Route</button>
+                    </div>
+                `;
             }
         }
 
@@ -550,8 +567,12 @@
 
         function updateFont(fontClass) {
             state.font = fontClass;
-            const targets = [document.body, document.getElementById('main-title'), ...document.querySelectorAll('.nav-item, h2, p, .setting-label, .app-button, .app-title, .win-btn')];
             const classes = ['font-serif', 'font-sans', 'font-mono', 'font-modern'];
+            document.body.classList.remove(...classes);
+            document.body.classList.add(fontClass);
+            
+            // Re-apply to specific dynamic elements if needed
+            const targets = [document.getElementById('main-title'), ...document.querySelectorAll('.nav-item, h2, p, .setting-label, .app-button, .app-title, .win-btn')];
             targets.forEach(node => {
                 if (node) {
                     node.classList.remove(...classes);
@@ -569,7 +590,7 @@
 
         /* --- INIT --- */
         window.addEventListener('resize', resize);
-        loadState(); // Apply saved settings
+        loadState(); 
         resize();
         animate();
     </script>
