@@ -329,18 +329,18 @@
                 <div style="width: 40px; height: 2px; background: var(--theme-color); margin-bottom: 30px;"></div>
                 
                 <div class="app-grid">
-                    <div class="app-button" onclick="openApp('Drive%20Mad/index.html', 'Drive Mad')">Drive Mad</div>
-                    <div class="app-button" onclick="openApp('Granny%201/index.html', 'Granny 1')">Granny 1</div>
-                    <div class="app-button" onclick="openApp('Hallownight/index.html', 'Hallownight')">Hallownight</div>
-                    <div class="app-button" onclick="openApp('Retrobowl/index.html', 'Retrobowl')">Retrobowl</div>
-                    <div class="app-button" onclick="openApp('5%20Nights%20At%20.../index.html', '5 Nights At...')">5 Nights At...</div>
-                    <div class="app-button" onclick="openApp('1v1.lol/index.html', '1v1.lol')">1v1.lol</div>
-                    <div class="app-button" onclick="openApp('99balls/index.html', '99balls')">99balls</div>
-                    <div class="app-button" onclick="openApp('Minecraft%201.9%20(laggy)/index.html', 'Minecraft 1.9')">Minecraft 1.9</div>
-                    <div class="app-button" onclick="openApp('Ultrakill/index.html', 'Ultrakill')">Ultrakill</div>
-                    <div class="app-button" onclick="openApp('jetpack%20joyride/index.html', 'Jetpack Joyride')">Jetpack Joyride</div>
-                    <div class="app-button" onclick="openApp('mega%20craft/index.html', 'Mega Craft')">Mega Craft</div>
-                    <div class="app-button" onclick="openApp('obby%20on%20a%20bike/index.html', 'Obby on a Bike')">Obby on a Bike</div>
+                    <div class="app-button" onclick="openApp('Drive%20Mad.html', 'Drive Mad')">Drive Mad</div>
+                    <div class="app-button" onclick="openApp('Granny%201.html', 'Granny 1')">Granny 1</div>
+                    <div class="app-button" onclick="openApp('Hallow%20Night.html', 'Hallow Night')">Hallow Night</div>
+                    <div class="app-button" onclick="openApp('Retrobowl.html', 'Retrobowl')">Retrobowl</div>
+                    <div class="app-button" onclick="openApp('5%20Nights%20At%20The%20Island.html', '5 Nights At The Island')">5 Nights At The Island</div>
+                    <div class="app-button" onclick="openApp('1v1-lol.html', '1v1.lol')">1v1.lol</div>
+                    <div class="app-button" onclick="openApp('99balls.html', '99balls')">99balls</div>
+                    <div class="app-button" onclick="openApp('Minecraft%201,9%20(laggy).html', 'Minecraft 1.9')">Minecraft 1.9</div>
+                    <div class="app-button" onclick="openApp('Ultrakill.html', 'Ultrakill')">Ultrakill</div>
+                    <div class="app-button" onclick="openApp('jetpack%20joyride.html', 'Jetpack Joyride')">Jetpack Joyride</div>
+                    <div class="app-button" onclick="openApp('mega%20craft.html', 'Mega Craft')">Mega Craft</div>
+                    <div class="app-button" onclick="openApp('obby%20on%20a%20bike.html', 'Obby on a Bike')">Obby on a Bike</div>
                 </div>
             </div>
 
@@ -350,10 +350,10 @@
                 <div style="width: 40px; height: 2px; background: var(--theme-color); margin-bottom: 30px;"></div>
                 
                 <div class="app-grid">
-                    <div class="app-button" onclick="openApp('Website%20preview/index.html', 'Website Preview')">Website Preview</div>
-                    <div class="app-button" onclick="openApp('Helios/index.html', 'Helios')">Helios</div>
-                    <div class="app-button" onclick="openApp('NautilusOS/index.html', 'NautilusOS')">NautilusOS</div>
-                    <div class="app-button" onclick="openApp('sandstone/index.html', 'Sandstone')">Sandstone</div>
+                    <div class="app-button" onclick="openApp('Website%20preview.html', 'Website Preview')">Website Preview</div>
+                    <div class="app-button" onclick="openApp('Helios.html', 'Helios')">Helios</div>
+                    <div class="app-button" onclick="openApp('NautilusOS.html', 'NautilusOS')">NautilusOS</div>
+                    <div class="app-button" onclick="openApp('sandstone.html', 'Sandstone')">Sandstone</div>
                 </div>
             </div>
 
@@ -511,20 +511,19 @@
                 const html = await response.text();
                 const doc = frame.contentWindow.document;
                 doc.open(); 
-                // Add base tag to resolve relative assets within the game
-                const baseTag = `<base href="${fullUrl.substring(0, fullUrl.lastIndexOf('/') + 1)}">`;
+                // Set the base URL to resolve any relative assets from the same folder
+                const baseTag = `<base href="${BASE_URL}">`;
                 doc.write(baseTag + html); 
                 doc.close();
                 
                 loader.style.display = 'none';
                 title.innerText = "Active Process: " + name;
             } catch (err) {
-                // Try fallback if index.html was already in path or shouldn't be
                 title.innerText = "Error: Connection Refused";
                 loader.innerHTML = `
                     <div style="text-align:center; padding: 20px;">
                         <span style="color:#ff3e3e; display:block; margin-bottom:10px;">Source failed to handshake.</span>
-                        <button class="win-btn" onclick="openApp('${path.replace('/index.html', '')}', '${name}')">Try Alternative Route</button>
+                        <button class="win-btn" onclick="openApp('${path}', '${name}')">Retry Connection</button>
                     </div>
                 `;
             }
@@ -571,7 +570,6 @@
             document.body.classList.remove(...classes);
             document.body.classList.add(fontClass);
             
-            // Re-apply to specific dynamic elements if needed
             const targets = [document.getElementById('main-title'), ...document.querySelectorAll('.nav-item, h2, p, .setting-label, .app-button, .app-title, .win-btn')];
             targets.forEach(node => {
                 if (node) {
