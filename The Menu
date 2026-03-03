@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Yes Presents</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,700&family=Space+Mono&family=Montserrat:wght@300;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --theme-color: #00ffff;
+            --theme-bg: #0a0a0a;
+            --text-color: #e0e0e0;
+        }
+
+        * { 
+            box-sizing: border-box;
+            transition: color 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
+        }
+        
+        body { 
+            margin: 0; 
+            background: var(--theme-bg); 
+            display: flex; 
+            flex-direction: column;
+            min-height: 100vh; 
+            overflow: hidden; 
+            color: var(--text-color);
+        }
+
+        /* Background Canvas */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: var(--theme-bg);
+            pointer-events: none;
+        }
+
+        /* Typography */
+        .font-serif { font-family: 'Playfair Display', serif; }
+        .font-sans { font-family: 'Open Sans', sans-serif; }
+        .font-mono { font-family: 'Space Mono', monospace; }
+        .font-modern { font-family: 'Montserrat', sans-serif; }
+
+        /* === SPLASH SCREEN === */
+        #splash-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            transition: opacity 1s ease, visibility 1s;
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #fff, var(--theme-color), #fff);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shine 5s linear infinite;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            font-style: italic;
+            font-size: clamp(2.5rem, 10vw, 5rem);
+            margin-bottom: 2rem;
+            text-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+            pointer-events: none;
+        }
+
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+
+        .enter-btn {
+            padding: 18px 50px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--theme-color);
+            color: var(--theme-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5em;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 14px;
+            z-index: 101;
+            backdrop-filter: blur(8px);
+            border-radius: 4px;
+        }
+
+        .enter-btn:hover {
+            background: var(--theme-color);
+            color: #000;
+            box-shadow: 0 0 30px var(--theme-color);
+            transform: translateY(-2px);
+        }
+
+        /* === MAIN INTERFACE & NAV === */
+        #main-interface {
+            display: none;
+            opacity: 0;
+            flex-direction: column;
+            height: 100vh;
+            width: 100%;
+            z-index: 10;
+            position: relative;
+            transition: opacity 0.8s ease;
+        }
+
+        nav#top-bar {
+            width: 100%;
+            height: 80px;
+            background: rgba(0, 0, 0, 0.7);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            backdrop-filter: blur(20px);
+            z-index: 20;
+        }
+
+        .nav-links {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 13px;
+            letter-spacing: 5px;
+            opacity: 0.4;
+            transition: 0.4s;
+            position: relative;
+            border-right: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .nav-item:last-child { border-right: none; }
+
+        .nav-item:hover, .nav-item.active {
+            opacity: 1;
+            color: var(--theme-color);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--theme-color);
+            box-shadow: 0 0 15px var(--theme-color);
+        }
+
+        /* Content Area */
+        #content-view {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .view-pane {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            text-align: center;
+            animation: paneIn 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            overflow-y: auto;
+        }
+
+        @keyframes paneIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Grid Styles */
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1000px;
+            margin-top: 30px;
+        }
+
+        .app-button {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+            padding: 20px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 80px;
+        }
+
+        .app-button:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: var(--theme-color);
+            color: var(--theme-color);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* === App Pop-up Window System === */
+        #app-window-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(15px);
+        }
+
+        .app-window {
+            width: 95%;
+            height: 90%;
+            background: #111;
+            border: 1px solid var(--theme-color);
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.2);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.17, 0.84, 0.44, 1);
+            position: relative;
+        }
+
+        .app-window.is-fullscreen {
+            width: 100% !important;
+            height: 100% !important;
+            border-radius: 0 !important;
+            border: none !important;
+        }
+
+        .app-header {
+            height: 50px;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            z-index: 10;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .app-title {
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-size: 11px;
+            color: var(--theme-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+        }
+
+        .win-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 5px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 10px;
+            transition: 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .win-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--theme-color);
+            color: var(--theme-color);
+        }
+
+        .win-btn.danger {
+            background: rgba(255, 62, 62, 0.1);
+            color: #ff3e3e;
+            border-color: rgba(255, 62, 62, 0.3);
+        }
+
+        .win-btn.danger:hover {
+            background: #ff3e3e;
+            color: white;
+        }
+
+        #app-frame {
+            flex: 1;
+            border: none;
+            background: white;
+            width: 100%;
+            height: 100%;
+        }
+
+        #app-loader {
+            position: absolute;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            color: var(--theme-color);
+            flex-direction: column;
+            gap: 15px;
+            z-index: 5;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--theme-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Settings View Styles */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            width: 100%;
+            max-width: 1000px;
+            margin-top: 30px;
+        }
+
+        .setting-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: left;
+            backdrop-filter: blur(10px);
+        }
+
+        .setting-label {
+            display: block;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--theme-color);
+            margin-bottom: 15px;
+            font-weight: bold;
+            opacity: 0.8;
+        }
+
+        select, input[type="range"] {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            outline: none;
+            width: 100%;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .color-presets {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .color-dot {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid rgba(255,255,255,0.1);
+            transition: all 0.2s;
+        }
+        
+        .color-dot:hover { transform: scale(1.15); border-color: rgba(255,255,255,0.5); }
+        .color-dot.active { border-color: white; transform: scale(1.1); box-shadow: 0 0 15px currentColor; }
+
+        .hidden { display: none !important; }
+        .visible { display: flex !important; opacity: 1 !important; }
+
+    </style>
+</head>
+<body class="font-sans">
+
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- App Window Pop-up -->
+    <div id="app-window-overlay">
+        <div id="target-window" class="app-window">
+            <div class="app-header">
+                <span id="window-title" class="app-title font-mono">Loading...</span>
+                <div class="header-controls">
+                    <button id="fs-toggle" class="win-btn font-mono" onclick="toggleFullscreen()">FULLSCREEN</button>
+                    <button class="win-btn danger font-mono" onclick="closeAppWindow()">EXIT_APP</button>
+                </div>
+            </div>
+            <div style="flex: 1; position: relative; background: #fff; overflow: hidden;">
+                <div id="app-loader">
+                    <div class="spinner"></div>
+                    <span class="font-mono" style="font-size: 10px; letter-spacing: 2px;">FETCHING_SOURCE</span>
+                </div>
+                <iframe id="app-frame" src="about:blank"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+        <h1 id="main-title" class="font-serif gradient-text">The Yes Presents</h1>
+        <button class="enter-btn font-sans" onclick="showMenu()">Enter</button>
+    </div>
+
+    <!-- Main Menu / Interface -->
+    <div id="main-interface" class="font-sans">
+        <nav id="top-bar">
+            <div class="nav-links">
+                <div class="nav-item active" onclick="switchTab('games', this)">Games</div>
+                <div class="nav-item" onclick="switchTab('apps', this)">Apps</div>
+                <div class="nav-item" onclick="switchTab('settings', this)">Settings</div>
+            </div>
+        </nav>
+
+        <div id="content-view">
+            <!-- Games Page -->
+            <div id="games-view" class="view-pane">
+                <h2 class="font-serif" style="font-size: 4rem; margin-bottom: 10px;">Games</h2>
+                <div style="width: 60px; height: 2px; background: var(--theme-color); margin-bottom: 25px;"></div>
+                
+                <div class="app-grid">
+                    <div class="app-button" onclick="openApp('https://cdn.jsdelivr.net/gh/killaliogggg/The-Yes-htmls@main/1v1.lol', '1v1.lol')">1v1.lol</div>
+                    <div class="app-button" onclick="openApp('https://cdn.jsdelivr.net/gh/killaliogggg/The-Yes-htmls@main/99balls', '99balls')">99balls</div>
+                    <div class="app-button" onclick="openApp('https://cdn.jsdelivr.net/gh/killaliogggg/The-Yes-htmls@main/Minecraft%201.9%20(laggy)', 'Minecraft 1.9')">Minecraft 1.9</div>
+                    <div class="app-button" onclick="openApp('https://cdn.jsdelivr.net/gh/killaliogggg/The-Yes-htmls@main/Ultrakill', 'Ultrakill')">Ultrakill</div>
+                    <div class="app-button" onclick="openApp('https://cdn.jsdelivr.net/gh/killaliogggg/The-Yes-htmls@main/jetpack%20joyride', 'Jetpack Joyride')">Jetpack Joyride</div>
+                    <div class="app-button" onclick="openApp('https://cdn.jsdelivr.net/gh/killaliogggg/The-Yes-htmls@main/mega%20craft', 'Mega Craft')">Mega Craft</div>
+                    <div class="app-button" onclick="openApp('https://cdn.jsdelivr.net/gh/killaliogggg/The-Yes-htmls@main/obby%20on%20a%20bike', 'Obby on a Bike')">Obby on a Bike</div>
+                </div>
+            </div>
+
+            <!-- Apps Page -->
+            <div id="apps-view" class="view-pane hidden">
+                <h2 class="font-serif" style="font-size: 4rem; margin-bottom: 10px;">Apps</h2>
+                <div style="width: 60px; height: 2px; background: var(--theme-color); margin-bottom: 25px;"></div>
+                
+                <div class="app-grid">
+                    <div class="app-button" onclick="openApp('https://cdn.jsdelivr.net/gh/killaliogggg/The-Yes-htmls@main/Website%20preview', 'Website Preview')">Website Preview</div>
+                    <div class="app-button" onclick="openApp('https://cdn.jsdelivr.net/gh/killaliogggg/The-Yes-htmls@main/Helios', 'Helios')">Helios</div>
+                    <div class="app-button" onclick="openApp('https://cdn.jsdelivr.net/gh/killaliogggg/The-Yes-htmls@main/NautilusOS', 'NautilusOS')">NautilusOS</div>
+                    <div class="app-button" onclick="openApp('https://cdn.jsdelivr.net/gh/killaliogggg/The-Yes-htmls@main/sandstone', 'Sandstone')">Sandstone</div>
+                </div>
+            </div>
+
+            <!-- Settings Page -->
+            <div id="settings-view" class="view-pane hidden">
+                <h2 class="font-serif" style="font-size: 3rem; margin-bottom: 5px;">System</h2>
+                <p style="opacity: 0.5; margin-bottom: 30px; letter-spacing: 1px;">Adjust your environment visualizers</p>
+                
+                <div class="settings-grid">
+                    <div class="setting-card">
+                        <span class="setting-label">Theme Color</span>
+                        <div class="color-presets">
+                            <div class="color-dot" style="background: #00ffff; color: #00ffff;" onclick="updateTheme('#00ffff', this)"></div>
+                            <div class="color-dot" style="background: #ff00ff; color: #ff00ff;" onclick="updateTheme('#ff00ff', this)"></div>
+                            <div class="color-dot" style="background: #ffff00; color: #ffff00;" onclick="updateTheme('#ffff00', this)"></div>
+                            <div class="color-dot" style="background: #ffffff; color: #ffffff;" onclick="updateTheme('#ffffff', this)"></div>
+                            <div class="color-dot" style="background: #ff3e3e; color: #ff3e3e;" onclick="updateTheme('#ff3e3e', this)"></div>
+                        </div>
+                    </div>
+
+                    <div class="setting-card">
+                        <span class="setting-label">Typography</span>
+                        <select onchange="updateFont(this.value)">
+                            <option value="font-serif">Playfair (Serif)</option>
+                            <option value="font-sans" selected>Open Sans (Sans)</option>
+                            <option value="font-mono">Space Mono (Mono)</option>
+                            <option value="font-modern">Montserrat (Modern)</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-card">
+                        <span class="setting-label">Particle Density</span>
+                        <input type="range" min="50" max="600" value="150" id="density-slider" oninput="updateDensity(this.value)">
+                        <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 10px; opacity: 0.5; text-transform: uppercase; letter-spacing: 1px;">
+                            <span>Minimal</span>
+                            <span>Intense</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* --- PARTICLE SYSTEM --- */
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let particleCount = 150;
+        let themeColor = '#00ffff';
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            if (particles.length === 0) initParticles();
+        }
+
+        class Particle {
+            constructor() { this.init(); }
+            init() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.alpha = Math.random() * 0.5 + 0.1;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0) this.x = canvas.width;
+                if (this.x > canvas.width) this.x = 0;
+                if (this.y < 0) this.y = canvas.height;
+                if (this.y > canvas.height) this.y = 0;
+            }
+            draw() {
+                ctx.fillStyle = themeColor;
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < particleCount; i++) particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let p of particles) {
+                p.update();
+                p.draw();
+            }
+            requestAnimationFrame(animate);
+        }
+
+        resize();
+        window.addEventListener('resize', resize);
+        animate();
+
+        /* --- NAVIGATION LOGIC --- */
+        function showMenu() {
+            const splash = document.getElementById('splash-screen');
+            const main = document.getElementById('main-interface');
+            splash.style.opacity = '0';
+            setTimeout(() => {
+                splash.style.display = 'none';
+                main.classList.add('visible');
+            }, 1000);
+        }
+
+        function switchTab(tab, el) {
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            if (el) el.classList.add('active');
+            document.querySelectorAll('.view-pane').forEach(pane => pane.classList.add('hidden'));
+            document.getElementById(tab + '-view').classList.remove('hidden');
+        }
+
+        /* --- APP POP-UP LOGIC --- */
+        let currentAppName = "";
+
+        async function openApp(url, name) {
+            const overlay = document.getElementById('app-window-overlay');
+            const frame = document.getElementById('app-frame');
+            const loader = document.getElementById('app-loader');
+            const title = document.getElementById('window-title');
+            
+            currentAppName = name;
+            overlay.style.display = 'flex';
+            loader.style.display = 'flex';
+            title.innerText = "INITIALIZING: " + name;
+            frame.src = 'about:blank';
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const html = await response.text();
+                
+                const doc = frame.contentWindow.document;
+                doc.open();
+                doc.write(html);
+                doc.close();
+                
+                loader.style.display = 'none';
+                title.innerText = "RUNNING: " + name;
+            } catch (err) {
+                console.error("Failed to load content", err);
+                title.innerText = "ERROR_LOADING: " + name;
+                loader.innerHTML = `<span style="color:#ff3e3e; text-transform:uppercase; font-size:12px; letter-spacing:2px;">Fetch Failed - Source Unavailable</span>
+                                    <button class="win-btn danger" onclick="closeAppWindow()" style="margin-top:20px">Return to Menu</button>`;
+            }
+        }
+
+        function toggleFullscreen() {
+            const win = document.getElementById('target-window');
+            const btn = document.getElementById('fs-toggle');
+            const isFS = win.classList.toggle('is-fullscreen');
+            btn.innerText = isFS ? "EXIT_FULLSCREEN" : "FULLSCREEN";
+            document.getElementById('app-frame').focus();
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === "Escape") {
+                const win = document.getElementById('target-window');
+                const overlay = document.getElementById('app-window-overlay');
+                if (win.classList.contains('is-fullscreen')) {
+                    toggleFullscreen();
+                } else if (overlay.style.display === 'flex') {
+                    closeAppWindow();
+                }
+            }
+        });
+
+        function closeAppWindow() {
+            const overlay = document.getElementById('app-window-overlay');
+            const frame = document.getElementById('app-frame');
+            const win = document.getElementById('target-window');
+            overlay.style.display = 'none';
+            frame.src = 'about:blank';
+            win.classList.remove('is-fullscreen');
+            document.getElementById('fs-toggle').innerText = "FULLSCREEN";
+            document.getElementById('app-loader').innerHTML = `
+                <div class="spinner"></div>
+                <span class="font-mono" style="font-size: 10px; letter-spacing: 2px;">FETCHING_SOURCE</span>
+            `;
+        }
+
+        /* --- PREFERENCES LOGIC --- */
+        function updateTheme(color, el) {
+            themeColor = color;
+            document.documentElement.style.setProperty('--theme-color', color);
+            document.querySelectorAll('.color-dot').forEach(dot => dot.classList.remove('active'));
+            if(el) el.classList.add('active');
+        }
+
+        function updateFont(fontClass) {
+            const targets = [document.body, document.getElementById('main-title'), ...document.querySelectorAll('.nav-item, h2, p, .setting-label, .app-button, .app-title, .win-btn')];
+            const classes = ['font-serif', 'font-sans', 'font-mono', 'font-modern'];
+            targets.forEach(node => {
+                if (node) {
+                    node.classList.remove(...classes);
+                    node.classList.add(fontClass);
+                }
+            });
+        }
+
+        function updateDensity(val) {
+            particleCount = parseInt(val);
+            initParticles();
+        }
+    </script>
+</body>
+</html>
