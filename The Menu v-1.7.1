@@ -502,7 +502,10 @@
             title.innerText = "System: Loading " + name;
             frame.src = 'about:blank';
 
-            const fullUrl = BASE_URL + path;
+            // Special handling for NautilusOS to use its custom URL
+            const fullUrl = name === 'NautilusOS' 
+                ? 'https://cdn.jsdelivr.net/gh/killaliogggg/The-Yes-htmls@main/NautilusOS.html' 
+                : BASE_URL + path;
 
             try {
                 const response = await fetch(fullUrl);
@@ -511,7 +514,6 @@
                 const html = await response.text();
                 const doc = frame.contentWindow.document;
                 doc.open(); 
-                // Set the base URL to resolve any relative assets from the same folder
                 const baseTag = `<base href="${BASE_URL}">`;
                 doc.write(baseTag + html); 
                 doc.close();
